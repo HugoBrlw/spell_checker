@@ -9,7 +9,7 @@ app = Flask(__name__)
 spell = SpellChecker(language=None)
 
 # Path to the custom British English word list file
-dictionary_path = os.path.join(os.path.dirname(__file__), 'en_GB-ise.txt')
+dictionary_path = os.path.join(os.path.dirname(__file__), 'fox.txt')
 
 # Function to load custom British English word list into the spell checker
 def load_custom_dictionary(spell, filepath):
@@ -39,6 +39,18 @@ def index():
 
 @app.route('/check_spelling', methods=['POST'])  # Define a route for the /check_spelling URL that accepts POST requests
 def check_spelling():
+    """Checks spelling errors in a provided text.
+
+This function receives JSON data containing a 'text' field and performs spell checking on the text. 
+It removes punctuation (except apostrophes) and identifies misspelled words. 
+The function then returns a JSON response with a list of misspelled words and suggested corrections.
+
+Args:
+    data: A dictionary containing the request data.
+
+Returns:
+    A JSON response containing a list of dictionaries with misspelled words and suggestions.
+"""
     data = request.get_json()  # Get the JSON data from the request
     text = data.get('text', '')  # Extract the 'text' field from the JSON data, defaulting to an empty string if not found
     # Remove punctuation for spell checking, but keep words with apostrophes
