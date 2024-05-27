@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spell Checker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>HB Web-based Spell Checker</h1>
+        <form id="spellForm">
+            <textarea id="textInput" name="text" rows="10" cols="50"></textarea><br>
+            <button type="submit">Check Spelling</button>
+        </form>
+        <div id="errors"></div>
+    </div>
+    <script>
+        document.getElementById('textInput').addEventListener('input', function() {
+            const text = this.value;
+            fetch('/check_spelling', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text: text })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const errorsDiv = document.getElementById('errors');
+                errorsDiv.innerHTML = '';
+                if (data.errors.length > 0) {
+                    data.errors.forEach(error => {
+                        const errorElement = document.createElement('div');
+                        errorElement.classList.add('error');
+                        errorElement.textContent = `Misspelled word: ${error.word}, Suggestions: ${error.suggestions.join(', ')}`;
+                        errorsDiv.appendChild(errorElement);
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
